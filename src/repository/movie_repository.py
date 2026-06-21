@@ -13,10 +13,6 @@ class MovieRepository:
     def __len__(self) -> int:
         return len(self._data)
 
-    @property
-    def dataframe(self) -> pd.DataFrame:
-        return self._data
-
     def get_by_indices(self, indices: list[int]) -> list[Movie]:
         rows = self._data.iloc[indices]
         return [
