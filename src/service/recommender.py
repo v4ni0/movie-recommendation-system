@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
-from src.pipeline import MoviePipeline
+from src.service.pipeline import MoviePipeline
 from src.config import RAW_DATA_PATH, PROCESSED_DATA_PATH, INDEX_PATH, MODEL_NAME
 
 

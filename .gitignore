@@ -4,8 +4,9 @@ __pycache__/
 .env
 *.index
 *.npy
-requirements.txt
 *cache
 data/processed/
 data/raw/
-*.vscode"excel/" 
+*.vscode
+.idea/
+excel/

@@ -17,11 +17,7 @@ if st.button("Get Recommendations"):
     else:
         with st.spinner("Searching for movies..."):
             try:
-                payload = {
-                    "description": description,
-                    "top_k": top_k
-                }
-                response = requests.post(API_URL, json=payload)
+                response = requests.get(API_URL, params={"description": description, "top_k": top_k})
                 
                 if response.status_code == 200:
                     data = response.json()

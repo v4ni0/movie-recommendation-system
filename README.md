@@ -24,21 +24,29 @@ A content-based movie recommendation system built with Python. It uses **Sentenc
 │   ├── content_based_filtering.ipynb
 │   └── EDA.ipynb
 ├── src/
-│   ├── api/
-│   │   └── main.py
+│   ├── controller/
+│   │   └── recommendation_controller.py
+│   ├── exceptions/
+│   │   └── exceptions.py
+│   ├── models/
+│   │   └── movie.py
+│   ├── repository/
+│   │   └── movie_repository.py
+│   ├── service/
+│   │   ├── data_audit.py
+│   │   ├── pipeline.py
+│   │   └── recommender.py
+│   ├── view/
+│   │   └── app.py
 │   ├── __init__.py
-│   ├── config.py
-│   ├── data_audit.py
-│   ├── pipeline.py
-│   └── recommender.py
+│   └── config.py
 ├── tests/
-│   ├── api/
-│   │   └── test_api.py
-│   ├── __init__.py
-│   ├── test_pipeline.py
-│   └── test_recommender.py
-├── view/
-│   └── app.py
+│   ├── controller/
+│   │   └── test_recommendation_controller.py
+│   ├── service/
+│   │   ├── test_pipeline.py
+│   │   └── test_recommender.py
+│   └── __init__.py
 ├── Dockerfile
 └── requirements.txt
 ```
@@ -65,14 +73,13 @@ pip install -r requirements.txt
 
 ## Data Setup
 
-Place the raw dataset at:
+Download the dataset from Kaggle: [TMDB Dataset](https://www.kaggle.com/datasets/ivanivanov04/tmdb-dataset)
+
+Place the CSV at:
 
 ```text
 data/raw/movies.csv
 ```
-
-The pipeline expects movie fields commonly found in TMDB-style datasets, including:
-`id`, `title`, `overview`, `genres`, `keywords`, `status`, `vote_average`, `vote_count`.
 
 ## How It Works (High Level)
 
@@ -88,7 +95,7 @@ The pipeline expects movie fields commonly found in TMDB-style datasets, includi
 The recommender will auto-generate processed data / index if missing, but you can run the pipeline manually:
 
 ```python
-from src.pipeline import MoviePipeline
+from src.service.pipeline import MoviePipeline
 
 pipeline = MoviePipeline()
 
@@ -104,13 +111,7 @@ pipeline.build_index()
 Start the API:
 
 ```bash
-python -m src.api.main
-```
-
-Or with Uvicorn:
-
-```bash
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+uvicorn src.controller.recommendation_controller:app --host 0.0.0.0 --port 8000
 ```
 
 API docs:
@@ -121,16 +122,13 @@ API docs:
 
 `GET /recommend`
 
-Example request body:
+Example request:
 
-```json
-{
-  "description": "Space travel and aliens",
-  "top_k": 5
-}
+```
+GET /recommend?description=Space+travel+and+aliens&top_k=5
 ```
 
-Example response shape:
+Example response:
 
 ```json
 {
@@ -143,7 +141,7 @@ Example response shape:
 ## Run the Streamlit App
 
 ```bash
-streamlit run view/app.py
+streamlit run src/view/app.py
 ```
 
 ## Testing

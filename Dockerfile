@@ -15,4 +15,4 @@ COPY --chown=user . .
 EXPOSE 7860
 
 
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "src.controller.recommendation_controller:app", "--host", "0.0.0.0", "--port", "7860"]

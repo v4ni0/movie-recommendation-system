@@ -1,37 +1,40 @@
 import unittest
-from src.recommender import MovieRecommender
+from src.service.recommender import MovieRecommender
+
+from src.config import RAW_DATA_PATH, PROCESSED_DATA_PATH, INDEX_PATH, MODEL_NAME
 
 
 class TestMovieRecommenderInit(unittest.TestCase):
-    def test_when_valid_paths_provided_then_object_is_successfully_initialized(self):        
+    def test_when_valid_paths_provided_then_object_is_successfully_initialized(self):
         recommender = MovieRecommender()
         self.assertIsNotNone(recommender.model)
         self.assertIsNotNone(recommender.index)
         self.assertFalse(recommender.data.empty)
 
     def test_when_invalid_csv_path_provided_then_throws_file_not_found_error(self):
-
-        invalid_csv = 'data/non_existent.csv'
-        index_path = 'data/movies_v1.index'
-
         with self.assertRaises(FileNotFoundError):
-            MovieRecommender(data_path=invalid_csv, index_path=index_path)
+            MovieRecommender(
+                original_data_path='data/non_existent.csv',
+                processed_data_path='data/non_existent.csv',
+                index_path=INDEX_PATH,
+            )
 
     def test_when_invalid_index_path_provided_then_throws_exception(self):
-        csv_path = 'data/cleaned_movies.csv'
-        invalid_index = 'data/wrong_file.index'
         with self.assertRaises(Exception):
-            MovieRecommender(data_path=csv_path, index_path=invalid_index)
+            MovieRecommender(
+                processed_data_path=PROCESSED_DATA_PATH,
+                index_path='data/wrong_file.index',
+            )
 
 
 class TestMovieRecommenderRecommend(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.recommender = MovieRecommender(
-            model_name='all-MiniLM-L6-v2',
-            original_data_path='data/movies.csv',
-            processed_data_path='data/processed.csv',
-            index_path='data/movies_v1.index'
+            model_name=MODEL_NAME,
+            original_data_path=RAW_DATA_PATH,
+            processed_data_path=PROCESSED_DATA_PATH,
+            index_path=INDEX_PATH
         )
 
     def test_recommend_returns_correct_number_of_results(self):
@@ -40,15 +43,14 @@ class TestMovieRecommenderRecommend(unittest.TestCase):
         results = self.recommender.recommend(query, top_k=expected_count)
         self.assertEqual(len(results), expected_count)
 
-    def test_recommend_returns_expected_columns(self):
+    def test_recommend_returns_expected_keys(self):
         query = "Romantic comedy"
-        expected_columns = ['id', 'title', 'score']
+        expected_keys = ['id', 'title', 'score']
         results = self.recommender.recommend(query)
-        self.assertTrue(all(col in results.columns for col in expected_columns))
+        self.assertTrue(all(key in results[0] for key in expected_keys))
 
     def test_recommend_returns_interstellar_when_given_description(self):
         query = "A group of astronauts travels through a wormhole in space in an attempt to ensure humanity's survival."
         results = self.recommender.recommend(query, top_k=1)
         self.assertEqual(len(results), 1)
-        self.assertEqual(results.iloc[0]['title'], 'Interstellar')
-        self.assertNotEqual(results.iloc[0]['title'], 'Other Movie')
+        self.assertEqual(results[0]['title'], 'Interstellar')

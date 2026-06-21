@@ -6,7 +6,6 @@ from sentence_transformers import SentenceTransformer
 
 from src.config import RAW_DATA_PATH, PROCESSED_DATA_PATH, INDEX_PATH, MODEL_NAME
 
-
 class MoviePipeline:
 
     def __init__(self, model_name=MODEL_NAME):
